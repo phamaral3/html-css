@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jogo da Forca</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
+        }
+        #word {
+            font-size: 2em;
+            letter-spacing: 2px;
+        }
+        #message {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <h1>Jogo da Forca</h1>
+    <div id="word"></div>
+    <div id="message"></div>
+    <input type="text" id="guess" maxlength="1" />
+    <button onclick="makeGuess()">Chutar</button>
+    <button onclick="resetGame()">Reiniciar</button>
+    <h2>Tentativas restantes: <span id="attempts">6</span></h2>
+
+    <script>
+        const words = ["javascript", "html", "css", "programacao", "desenvolvedor"];
+        let chosenWord;
+        let guessedLetters = [];
+        let attempts = 6;
+
+        function chooseWord() {
+            chosenWord = words[Math.floor(Math.random() * words.length)];
+            guessedLetters = [];
+            attempts = 6;
+            updateWordDisplay();
+            updateAttemptsDisplay();
+            document.getElementById("message").textContent = "";
+            document.getElementById("guess").value = "";
+        }
+
+        function updateWordDisplay() {
+            const displayWord = chosenWord.split('').map(letter => 
+                guessedLetters.includes(letter) ? letter : '_'
+            ).join(' ');
+            document.getElementById("word").textContent = displayWord;
+        }
+
+        function updateAttemptsDisplay() {
+            document.getElementById("attempts").textContent = attempts;
+        }
+
+        function makeGuess() {
+            const guessInput = document.getElementById("guess");
+            const guess = guessInput.value.toLowerCase();
+            guessInput.value = '';
+
+            if (guessedLetters.includes(guess) || guess.length !== 1) {
+                return;
+            }
+
+            guessedLetters.push(guess);
+
+            if (!chosenWord.includes(guess)) {
+                attempts--;
+            }
+
+            updateWordDisplay();
+            updateAttemptsDisplay();
+
+            if (attempts === 0) {
+                document.getElementById("message").textContent = `Você perdeu! A palavra era "${chosenWord}".`;
+            } else if (chosenWord.split('').every(letter => guessedLetters.includes(letter))) {
+                document.getElementById("message").textContent = "Parabéns! Você adivinhou a palavra!";
+            }
+        }
+
+        function resetGame() {
+            chooseWord();
+        }
+
+        window.onload = chooseWord;
+    </script>
+</body>
+</html>
